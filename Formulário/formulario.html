@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+</head>
+<style>
+css
+/* Formatação para o formulário */
+.form {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    margin-bottom: 20px;
+}
+
+.form label {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+.form input[type="text"],
+.form input[type="date"] {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+.form button[type="submit"] {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Formatação para tabela */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table th, table td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+table th {
+    background-color: #ff0000;
+    color: #fff;
+    font-weight: bold;
+}
+
+table td {
+    text-align: center;
+}
+
+/* Formatação para os botões */
+table td button {
+    padding: 5px 10px;
+    margin-right: 5px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+table td button:last-child {
+    margin-right: 0;
+}
+
+/* Formatação extras*/
+body {
+    background-color: #f8f8f8;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+h1 {
+    color: #ff0000;
+    margin-bottom: 20px;
+}
+
+p { color: #ff0000;
+    padding: 10px;
+    text-align: left;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+</style>
+<body>
+    <h1>Cadastro de Pessoas</h1>
+    <form class="form js-form">
+        <label for="name">
+            Nome
+            <input type="text" id="name" name="name" minlength="3" maxlength="120" pattern="[A-Za-zÀ-ÿ\s]+" required>
+        </label>
+
+        <label for="birth-date">
+            Data de Nascimento
+            <input class="form-field js-field" id="birth-date" name="birth-date" required type="date">
+        </label>
+        <button type="submit">Salvar</button>
+        
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Data de Nascimento</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+    </table>
+
+    <script>
+        // Adicionar evento de submissão ao formulário
+        const form = document.querySelector('.js-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Obter valores dos campos do formulário
+            const nameInput = document.querySelector('#name');
+            const birthdateInput = document.querySelector('#birth-date');
+
+            const name = nameInput.value;
+            const birthdate = birthdateInput.value;
+
+            // Montar objeto representando a pessoa
+            const person = {
+                name: name,
+                birthdate: birthdate,
+            };
+
+            // Salvar objeto no localStorage
+            localStorage.setItem('person', JSON.stringify(person));
+
+            // Atualizar tabela com os dados salvos
+            updateTable();
+
+            // Limpar campos do formulário
+            nameInput.value = '';
+            birthdateInput.value = '';
+        });
+
+        // Atualizar tabela com os dados salvos
+        function updateTable() {
+            const tableBody = document.querySelector('#table-body');
+
+            // Limpar tabela
+            tableBody.innerHTML = '';
+
+            // Ler dados salvos do localStorage
+            const savedPerson = JSON.parse(localStorage.getItem('person'));
+
+            // Verificar se existem dados salvos e atualizar a tabela
+            if (savedPerson) {
+                const row = document.createElement('tr');
+                const nameCell = document.createElement('td');
+                const birthdateCell = document.createElement('td');
+                const actionCell = document.createElement('td'); // Célula para o botão de edição
+
+                nameCell.textContent = savedPerson.name;
+                birthdateCell.textContent = savedPerson.birthdate;
+
+                row.appendChild(nameCell);
+                row.appendChild(birthdateCell);
+                row.appendChild(actionCell); // Adicionar a célula do botão de edição à linha
+
+                tableBody.appendChild(row);
+
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Editar';
+
+                actionCell.appendChild(editButton);
+
+                editButton.addEventListener('click', function() {
+                    // Preencher o formulário com os dados recuperados
+                    const nameInput = document.querySelector('#name');
+                    const birthdateInput = document.querySelector('#birth-date');
+
+                    nameInput.value = savedPerson.name;
+                    birthdateInput.value = savedPerson.birthdate;
+                });
+
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remover';
+
+                actionCell.appendChild(removeButton);
+                removeButton.addEventListener('click', function() {
+                    // Remover a linha da tabela
+                    row.remove();
+
+                    // Remover dados persistidos
+                    localStorage.removeItem('person');
+
+                    // Atualizar tabela após a remoção
+                    updateTable();
+                });
+            }
+        }
+
+        // Atualizar tabela ao recarregar a página
+        updateTable();
+    </script>
+    <p>Desenvolvedores:Guilherme Silva e William Sousa</p>
+</body>
+</html>
+  
